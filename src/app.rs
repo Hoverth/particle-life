@@ -158,7 +158,7 @@ pub fn update(app: &App, model: &mut Model, update: Update) {
         ));
     });
 
-    egui::Window::new("Table: ").show(&c, |ui| {
+    egui::Window::new("Table: ").default_open(false).show(&c, |ui| {
         egui::Grid::new("Atomic relations:").show(ui, |ui| {
             ui.label("");
             for i in 0..model.settings.rel.table.len() {
