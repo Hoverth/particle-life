@@ -112,15 +112,14 @@ pub fn model(app: &App) -> Model {
 }
 
 pub fn update(app: &App, model: &mut Model, update: Update) {
-    //-------------------EGUI-------------------
     let egui = &mut model.egui;
-    //let set = &mut model.settings;
+
     egui.set_elapsed_time(update.since_start);
 
     let c = egui.begin_frame();
 
     egui::Window::new("FPS: ").show(&c, |ui| {
-        ui.label(app.fps());
+        ui.label(app.fps().to_string());
     });
     egui::Window::new("Settings for particle life: ").show(&c, |ui| {
 
