@@ -24,6 +24,7 @@ pub struct Settings {
     pub psize: f32,
     pub paused: bool,
     pub offset: Vec2,
+    pub world_size: Vec2,
 }
 
 fn init(app: &App, _window: window::Id) -> Model {
@@ -50,6 +51,7 @@ fn init(app: &App, _window: window::Id) -> Model {
         psize: 5.0,
         paused: false,
         offset: Vec2::ZERO,
+        world_size: Vec2::new(app.window_rect().w_h().0,app.window_rect().w_h().1),
     };
     let mut atoms: Vec<Atom> = vec![Atom::default(); NUM];
     let (bx, by) = app.window_rect().w_h();
@@ -86,9 +88,10 @@ fn restart(app: &App, _window: window::Id, n: usize, n_t: usize) -> Model {
         psize: m.settings.psize,
         paused: m.settings.paused,
         offset: m.settings.offset,
+        world_size: m.settings.world_size,
     };
     let mut atoms: Vec<Atom> = vec![Atom::default(); n];
-    let (bx, by) = app.window_rect().w_h();
+    let (bx, by) = (settings.world_size.x, settings.world_size.y);
     for (i, atom) in atoms.iter_mut().enumerate() {
         atom.pos.x = random_range(-bx / 2.0, bx / 2.0);
         atom.pos.y = random_range(-by / 2.0, by / 2.0);
@@ -238,6 +241,12 @@ fn raw_events(_app: &App, model: &mut Model, event: &nannou::winit::event::Windo
 fn view(app: &App, model: &Model, frame: Frame) {
     let draw = app.draw();
     draw.background().color(DARKSLATEGRAY);
+
+    draw.rect().x_y(model.settings.offset.x, model.settings.offset.y)
+        .w_h(model.settings.world_size.x * model.settings.zoom, 
+             model.settings.world_size.y * model.settings.zoom)
+        .rgba(0.0, 0.0, 0.0, 0.0)
+        .stroke_weight(5.0 * model.settings.zoom);
 
     for i in &model.atoms {
         i.draw(&draw, model.settings.offset, model.settings.zoom, model.settings.psize * model.settings.zoom);
