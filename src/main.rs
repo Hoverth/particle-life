@@ -18,32 +18,32 @@ fn init(app: &App, _window: window::Id) -> Model {
     let (r_min, r_max) = (0.2, 50.0);
     let friction = 0.2;
 
-    const num: usize = 1200;
-    const num_t: usize = 2;
-    let mut rel = Relation::new(num_t);
-    rel.set(0.03, 0 as usize, 0 as usize);
-    rel.set(0.015, 1 as usize, 0 as usize);
-    rel.set(-0.02, 0 as usize, 1 as usize);
-    rel.set(-0.02, 1 as usize, 1 as usize);
+    const NUM: usize = 1200;
+    const NUM_T: usize = 2;
+    let mut rel = Relation::new(NUM_T);
+    rel.set(0.03, 0_usize, 0_usize);
+    rel.set(0.015, 1_usize, 0_usize);
+    rel.set(-0.02, 0_usize, 1_usize);
+    rel.set(-0.02, 1_usize, 1_usize);
 
     let settings = Settings {
         r_min,
         r_max,
         friction,
-        num,
-        num_t,
+        num: NUM,
+        num_t: NUM_T,
         rel,
-        pn: num,
-        pnt: num_t,
+        pn: NUM,
+        pnt: NUM_T,
         zoom: 1.0,
         psize: 5.0,
     };
-    let mut atoms: Vec<Atom> = vec![Atom::default(); num];
+    let mut atoms: Vec<Atom> = vec![Atom::default(); NUM];
     let (bx, by) = app.window_rect().w_h();
-    for i in 0..atoms.len() {
-        atoms[i].pos.x = random_range(-bx / 2.0, bx / 2.0);
-        atoms[i].pos.y = random_range(-by / 2.0, by / 2.0);
-        atoms[i].t = (i % num_t) as usize;
+    for (i, atom) in atoms.iter_mut().enumerate() {
+        atom.pos.x = random_range(-bx / 2.0, bx / 2.0);
+        atom.pos.y = random_range(-by / 2.0, by / 2.0);
+        atom.t = i % NUM_T;
     }
     Model {
         _window,
@@ -53,7 +53,7 @@ fn init(app: &App, _window: window::Id) -> Model {
     }
 }
 fn restart(app: &App, _window: window::Id, n: usize, n_t: usize) -> Model {
-    let m = init(&app, _window);
+    let m = init(app, _window);
     let num: usize = n;
     let num_t: usize = n_t;
 
@@ -73,10 +73,10 @@ fn restart(app: &App, _window: window::Id, n: usize, n_t: usize) -> Model {
     };
     let mut atoms: Vec<Atom> = vec![Atom::default(); n];
     let (bx, by) = app.window_rect().w_h();
-    for i in 0..atoms.len() {
-        atoms[i].pos.x = random_range(-bx / 2.0, bx / 2.0);
-        atoms[i].pos.y = random_range(-by / 2.0, by / 2.0);
-        atoms[i].t = (i % num_t) as usize;
+    for (i, atom) in atoms.iter_mut().enumerate() {
+        atom.pos.x = random_range(-bx / 2.0, bx / 2.0);
+        atom.pos.y = random_range(-by / 2.0, by / 2.0);
+        atom.t = i % num_t;
     }
     let e = Egui::from_window(&(app.window(_window).unwrap()));
     Model {
@@ -97,7 +97,7 @@ fn model(app: &App) -> Model {
         .build()
         .unwrap();
 
-    init(&app, _window)
+    init(app, _window)
 }
 
 fn update(_app: &App, model: &mut Model, update: Update) {
@@ -131,13 +131,13 @@ fn update(_app: &App, model: &mut Model, update: Update) {
         ui.label("Species:");
         ui.add(egui::Slider::new(
             &mut model.settings.pnt,
-            1 as usize..=5 as usize,
+            1_usize..=5_usize,
         ));
 
         ui.label("Number of particles:");
         ui.add(egui::Slider::new(
             &mut model.settings.pn,
-            500 as usize..=5000 as usize,
+            500_usize..=5000_usize,
         ));
 
         //ui.add(
@@ -185,7 +185,7 @@ fn update(_app: &App, model: &mut Model, update: Update) {
             if i == j {
                 continue;
             }
-            f = f + model.atoms[i].get_force(&model.atoms[j], &model.settings);
+            f += model.atoms[i].get_force(&model.atoms[j], &model.settings);
         }
         //println!("{}", f);
         model.atoms[i].apply_forces(f, &model.settings);
@@ -194,9 +194,9 @@ fn update(_app: &App, model: &mut Model, update: Update) {
 }
 fn events(_app: &App, _model: &mut Model, event: WindowEvent) {
     match event {
-        KeyPressed(_k) => {
-            //
-        }
+        // TODO
+        KeyPressed(Key::Escape) => { /* quit */ },
+        KeyPressed(Key::Space) => { /* pause */ },
         _ => {}
     }
 }
@@ -233,6 +233,7 @@ struct Atom {
     t: usize,
 }
 impl Atom {
+    #![allow(dead_code)]
     fn new(pos: Vec2, vel: Vec2, t: usize) -> Self {
         Self { pos, vel, t }
     }
@@ -240,7 +241,7 @@ impl Atom {
         Self {
             pos: Vec2::ZERO,
             vel: Vec2::ZERO,
-            t: 0 as usize,
+            t: 0_usize,
         }
     }
     fn get_force(&self, p: &Atom, s: &Settings) -> Vec2 {
@@ -251,7 +252,7 @@ impl Atom {
         if d > s.r_max {
             Vec2::ZERO
         } else {
-            d = d / s.r_max;
+            d /= s.r_max;
             if d < s.r_min {
                 delta * ((d / s.r_min) - 1.0)
             } else {
@@ -268,7 +269,7 @@ impl Atom {
         self.vel = (self.vel + f) * s.friction;
     }
     fn update(&mut self) {
-        self.pos = self.pos + self.vel;
+        self.pos += self.vel;
     }
     fn draw(&self, d: &Draw, z: f32, s: f32) {
         let col = get_col(self.t);
