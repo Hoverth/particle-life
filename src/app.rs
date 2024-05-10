@@ -4,7 +4,7 @@ use nannou_egui::{self, egui, Egui};
 use crate::atom::Atom;
 use crate::relation::Relation;
 
-struct Model {
+pub struct Model {
     _window: window::Id,
     settings: Settings,
     atoms: Vec<Atom>,
