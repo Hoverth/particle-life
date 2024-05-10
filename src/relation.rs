@@ -1,3 +1,5 @@
+use nannou::rand::random_range;
+
 pub struct Relation {
     pub table: Vec<Vec<f32>>,
 }
@@ -5,7 +7,15 @@ pub struct Relation {
 impl Relation {
     pub fn new(s: usize) -> Self {
         Self {
-            table: vec![vec![0.0; s]; s],
+            table: {
+                let mut vec: Vec<Vec<f32>> = vec![vec![0.0; s]; s];
+                for i in 0..vec.capacity() {
+                    for j in 0..vec[i].capacity() {
+                        vec[i][j] = ((random_range(-0.1, 0.1) * 1000.0) as f32).round() / 1000.0;
+                    }
+                };
+                vec
+            }
         }
     }
 
