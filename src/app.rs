@@ -22,6 +22,7 @@ pub struct Settings {
     pub pnt: usize,
     pub zoom: f32,
     pub psize: f32,
+    pub paused: bool,
 }
 
 fn init(app: &App, _window: window::Id) -> Model {
@@ -46,6 +47,7 @@ fn init(app: &App, _window: window::Id) -> Model {
         pnt: NUM_T,
         zoom: 1.0,
         psize: 5.0,
+        paused: false,
     };
     let mut atoms: Vec<Atom> = vec![Atom::default(); NUM];
     let (bx, by) = app.window_rect().w_h();
@@ -80,6 +82,7 @@ fn restart(app: &App, _window: window::Id, n: usize, n_t: usize) -> Model {
         pnt: num_t,
         zoom: m.settings.zoom,
         psize: m.settings.psize,
+        paused: m.settings.paused,
     };
     let mut atoms: Vec<Atom> = vec![Atom::default(); n];
     let (bx, by) = app.window_rect().w_h();
@@ -162,11 +165,11 @@ pub fn update(app: &App, model: &mut Model, update: Update) {
         egui::Grid::new("Atomic relations:").show(ui, |ui| {
             ui.label("");
             for i in 0..model.settings.rel.table.len() {
-                ui.label(format!("{}", i));
+                ui.label(format!("{}", i+1));
             }
             ui.end_row();
             for i in 0..model.settings.rel.table.len() {
-                ui.label(format!("{}", i));
+                ui.label(format!("{}", i+1));
                 for j in 0..model.settings.rel.table[i].len() {
                     ui.add(egui::Slider::new(
                         &mut model.settings.rel.table[i][j],
@@ -192,17 +195,19 @@ pub fn update(app: &App, model: &mut Model, update: Update) {
         }
     }
 
-    for i in 0..model.atoms.len() {
-        let mut f = Vec2::ZERO;
-        for j in 0..model.atoms.len() {
-            if i == j {
-                continue;
+    if !model.settings.paused {
+        for i in 0..model.atoms.len() {
+            let mut f = Vec2::ZERO;
+            for j in 0..model.atoms.len() {
+                if i == j {
+                    continue;
+                }
+                f += model.atoms[i].get_force(&model.atoms[j], &model.settings);
             }
-            f += model.atoms[i].get_force(&model.atoms[j], &model.settings);
-        }
 
-        model.atoms[i].apply_forces(f, &model.settings);
-        model.atoms[i].update();
+            model.atoms[i].apply_forces(f, &model.settings);
+            model.atoms[i].update();
+        }
     }
 }
 
@@ -210,7 +215,8 @@ fn events(app: &App, model: &mut Model, event: WindowEvent) {
     match event {
         // TODO
         KeyPressed(Key::Escape) => { app.quit() },
-        KeyPressed(Key::Space) => { /* pause */ },
+        KeyPressed(Key::Space) => { model.settings.paused = !model.settings.paused },
+        KeyPressed(Key::F11) => { /* TODO app.toggle_fullscreen() */ },
 
         KeyPressed(Key::Equals) => model.settings.zoom += 0.1,
         KeyPressed(Key::Minus) => model.settings.zoom -= 0.1,
@@ -227,7 +233,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
     draw.background().color(DARKSLATEGRAY);
 
     for i in &model.atoms {
-        i.draw(&draw, model.settings.zoom, model.settings.psize);
+        i.draw(&draw, model.settings.zoom, model.settings.psize * model.settings.zoom);
     }
     draw.to_frame(app, &frame).unwrap();
     model.egui.draw_to_frame(&frame).unwrap();
