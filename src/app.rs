@@ -173,18 +173,13 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
                 ui.end_row();
             }
         })
-        //);
-
-        //
-
-        //drop(c);
     });
-    //------------------------------------------
+
     if model.settings.pn != model.settings.num || model.settings.pnt != model.settings.num_t {
         let dmod = restart(_app, model._window, model.settings.pn, model.settings.pnt);
         model._window = dmod._window;
         model.atoms = dmod.atoms;
-        //egui = &mut dmod.egui;
+
         if dmod.settings.rel.table.len() == model.settings.rel.table.len() {
             let reld = model.settings.rel.table.clone();
             model.settings = dmod.settings;
@@ -202,7 +197,7 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
             }
             f += model.atoms[i].get_force(&model.atoms[j], &model.settings);
         }
-        //println!("{}", f);
+
         model.atoms[i].apply_forces(f, &model.settings);
         model.atoms[i].update();
     }
