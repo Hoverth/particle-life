@@ -49,8 +49,10 @@ impl Atom {
         self.vel = (self.vel + f) * s.friction;
     }
     
-    pub fn update(&mut self) {
+    pub fn update(&mut self, world_size: Vec2) {
         self.pos += self.vel;
+
+        // TODO implement world wrap
     }
     
     pub fn draw(&self, d: &Draw, o: Vec2, z: f32, s: f32) {

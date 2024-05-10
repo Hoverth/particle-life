@@ -212,7 +212,7 @@ pub fn update(app: &App, model: &mut Model, update: Update) {
             }
 
             model.atoms[i].apply_forces(f, &model.settings);
-            model.atoms[i].update();
+            model.atoms[i].update(model.settings.world_size);
         }
     }
 }
