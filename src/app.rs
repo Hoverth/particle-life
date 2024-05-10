@@ -23,6 +23,7 @@ pub struct Settings {
     pub zoom: f32,
     pub psize: f32,
     pub paused: bool,
+    pub offset: Vec2,
 }
 
 fn init(app: &App, _window: window::Id) -> Model {
@@ -48,6 +49,7 @@ fn init(app: &App, _window: window::Id) -> Model {
         zoom: 1.0,
         psize: 5.0,
         paused: false,
+        offset: Vec2::ZERO,
     };
     let mut atoms: Vec<Atom> = vec![Atom::default(); NUM];
     let (bx, by) = app.window_rect().w_h();
@@ -83,6 +85,7 @@ fn restart(app: &App, _window: window::Id, n: usize, n_t: usize) -> Model {
         zoom: m.settings.zoom,
         psize: m.settings.psize,
         paused: m.settings.paused,
+        offset: m.settings.offset,
     };
     let mut atoms: Vec<Atom> = vec![Atom::default(); n];
     let (bx, by) = app.window_rect().w_h();
@@ -218,6 +221,10 @@ fn events(app: &App, model: &mut Model, event: WindowEvent) {
         KeyPressed(Key::Space) => { model.settings.paused = !model.settings.paused },
         KeyPressed(Key::F11) => { /* TODO app.toggle_fullscreen() */ },
 
+        KeyPressed(Key::Left) => model.settings.offset.x += 10.0,
+        KeyPressed(Key::Right) => model.settings.offset.x -= 10.0,
+        KeyPressed(Key::Up) => model.settings.offset.y -= 10.0,
+        KeyPressed(Key::Down) => model.settings.offset.y += 10.0,
         KeyPressed(Key::Equals) => model.settings.zoom += 0.1,
         KeyPressed(Key::Minus) => model.settings.zoom -= 0.1,
         _ => {}
@@ -233,7 +240,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
     draw.background().color(DARKSLATEGRAY);
 
     for i in &model.atoms {
-        i.draw(&draw, model.settings.zoom, model.settings.psize * model.settings.zoom);
+        i.draw(&draw, model.settings.offset, model.settings.zoom, model.settings.psize * model.settings.zoom);
     }
     draw.to_frame(app, &frame).unwrap();
     model.egui.draw_to_frame(&frame).unwrap();

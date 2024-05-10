@@ -53,11 +53,11 @@ impl Atom {
         self.pos += self.vel;
     }
     
-    pub fn draw(&self, d: &Draw, z: f32, s: f32) {
+    pub fn draw(&self, d: &Draw, o: Vec2, z: f32, s: f32) {
         let col = Self::get_col(self.t);
         d.ellipse()
             .color(col)
-            .x_y(self.pos.x * z, self.pos.y * z)
+            .x_y(self.pos.x * z + o.x, self.pos.y * z + o.y)
             .w_h(s, s);
     }
 
