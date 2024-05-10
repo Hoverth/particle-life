@@ -146,7 +146,7 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
         ui.label("Species:");
         ui.add(egui::Slider::new(
             &mut model.settings.pnt,
-            1_usize..=5_usize,
+            1_usize..=10_usize,
         ));
 
         ui.label("Number of particles:");
@@ -155,7 +155,6 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
             500_usize..=5000_usize,
         ));
 
-        //ui.add(
         egui::Grid::new("Atomic relations:").show(ui, |ui| {
             ui.label("");
             for i in 0..model.settings.rel.table.len() {
@@ -167,7 +166,7 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
                 for j in 0..model.settings.rel.table[i].len() {
                     ui.add(egui::Slider::new(
                         &mut model.settings.rel.table[i][j],
-                        -0.5..=0.5,
+                        -0.2..=0.2,
                     ));
                 }
                 ui.end_row();

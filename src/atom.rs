@@ -70,6 +70,10 @@ impl Atom {
             4 => KHAKI,
             5 => LIGHTCORAL,
             6 => LIGHTPINK,
+            7 => PALEGREEN,
+            8 => TURQUOISE,
+            9 => SNOW,
+            10 => MEDIUMSLATEBLUE,
             _ => SEASHELL,
         }
     }
