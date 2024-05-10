@@ -4,6 +4,8 @@
 
 A particle life simulation in Rust.
 
+**Note:** doesn't work on wayland, use `env -u WAYLAND_DISPLAY cargo run -r` to run
+
 ---
 
 
