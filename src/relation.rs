@@ -22,7 +22,8 @@ impl Relation {
     pub fn get(&self, c: usize, r: usize) -> f32 {
         self.table[c][r]
     }
-    
+   
+    #[allow(dead_code)]
     pub fn set(&mut self, v: f32, c: usize, r: usize) {
         self.table[c][r] = v;
     }

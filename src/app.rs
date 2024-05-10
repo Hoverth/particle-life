@@ -32,12 +32,8 @@ fn init(app: &App, _window: window::Id) -> Model {
     let friction = 0.2;
 
     const NUM: usize = 1200;
-    const NUM_T: usize = 2;
-    let mut rel = Relation::new(NUM_T);
-    rel.set(0.03, 0_usize, 0_usize);
-    rel.set(0.015, 1_usize, 0_usize);
-    rel.set(-0.02, 0_usize, 1_usize);
-    rel.set(-0.02, 1_usize, 1_usize);
+    const NUM_T: usize = 7;
+    let rel = Relation::new(NUM_T);
 
     let settings = Settings {
         r_min,
@@ -105,7 +101,7 @@ pub fn model(app: &App) -> Model {
     let _window = app
         .new_window()
         .title("Particle life")
-        .size(640, 320)
+        .maximized(true)
         .raw_event(raw_events)
         .event(events)
         .view(view)
@@ -115,7 +111,7 @@ pub fn model(app: &App) -> Model {
     init(app, _window)
 }
 
-pub fn update(_app: &App, model: &mut Model, update: Update) {
+pub fn update(app: &App, model: &mut Model, update: Update) {
     //-------------------EGUI-------------------
     let egui = &mut model.egui;
     //let set = &mut model.settings;
@@ -123,6 +119,9 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
 
     let c = egui.begin_frame();
 
+    egui::Window::new("FPS: ").show(&c, |ui| {
+        ui.label(app.fps());
+    });
     egui::Window::new("Settings for particle life: ").show(&c, |ui| {
 
         ui.horizontal_wrapped(|ui| {
@@ -181,7 +180,7 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
     });
 
     if model.settings.pn != model.settings.num || model.settings.pnt != model.settings.num_t {
-        let dmod = restart(_app, model._window, model.settings.pn, model.settings.pnt);
+        let dmod = restart(app, model._window, model.settings.pn, model.settings.pnt);
         model._window = dmod._window;
         model.atoms = dmod.atoms;
 
@@ -208,11 +207,14 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
     }
 }
 
-fn events(_app: &App, _model: &mut Model, event: WindowEvent) {
+fn events(app: &App, model: &mut Model, event: WindowEvent) {
     match event {
         // TODO
-        KeyPressed(Key::Escape) => { /* quit */ },
+        KeyPressed(Key::Escape) => { app.quit() },
         KeyPressed(Key::Space) => { /* pause */ },
+
+        KeyPressed(Key::Equals) => model.settings.zoom += 0.1,
+        KeyPressed(Key::Minus) => model.settings.zoom -= 0.1,
         _ => {}
     }
 }
@@ -224,7 +226,7 @@ fn raw_events(_app: &App, model: &mut Model, event: &nannou::winit::event::Windo
 fn view(app: &App, model: &Model, frame: Frame) {
     let draw = app.draw();
     draw.background().color(DARKSLATEGRAY);
-    //draw.ellipse().color(STEELBLUE);
+
     for i in &model.atoms {
         i.draw(&draw, model.settings.zoom, model.settings.psize);
     }
