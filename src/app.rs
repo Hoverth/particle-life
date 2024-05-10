@@ -124,13 +124,17 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
     let c = egui.begin_frame();
 
     egui::Window::new("Settings for particle life: ").show(&c, |ui| {
-        ui.label("Zoom:");
-        if ui.button("+").clicked() {
-            model.settings.zoom -= 0.1;
-        }
-        if ui.button("-").clicked() {
-            model.settings.zoom += 0.1;
-        }
+
+        ui.horizontal_wrapped(|ui| {
+            ui.label("Zoom:");
+            if ui.button("+").clicked() {
+                model.settings.zoom += 0.1;
+            }
+            if ui.button("-").clicked() {
+                model.settings.zoom -= 0.1;
+            }
+        });
+
         ui.label("Friction: ");
         ui.add(egui::Slider::new(&mut model.settings.friction, 0.01..=0.75));
 
@@ -154,7 +158,9 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
             &mut model.settings.pn,
             500_usize..=5000_usize,
         ));
+    });
 
+    egui::Window::new("Table: ").show(&c, |ui| {
         egui::Grid::new("Atomic relations:").show(ui, |ui| {
             ui.label("");
             for i in 0..model.settings.rel.table.len() {
