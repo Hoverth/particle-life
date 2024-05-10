@@ -14,6 +14,7 @@ impl Atom {
     pub fn new(pos: Vec2, vel: Vec2, t: usize) -> Self {
         Self { pos, vel, t }
     }
+
     pub fn default() -> Self {
         Self {
             pos: Vec2::ZERO,
@@ -21,6 +22,7 @@ impl Atom {
             t: 0_usize,
         }
     }
+
     pub fn get_force(&self, p: &Atom, s: &Settings) -> Vec2 {
         let rel = &s.rel;
 
@@ -42,12 +44,15 @@ impl Atom {
             }
         }
     }
+
     pub fn apply_forces(&mut self, f: Vec2, s: &Settings) {
         self.vel = (self.vel + f) * s.friction;
     }
+    
     pub fn update(&mut self) {
         self.pos += self.vel;
     }
+    
     pub fn draw(&self, d: &Draw, z: f32, s: f32) {
         let col = Self::get_col(self.t);
         d.ellipse()

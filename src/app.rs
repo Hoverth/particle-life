@@ -2,9 +2,9 @@ use nannou::prelude::*;
 use nannou_egui::{self, egui, Egui};
 
 use crate::atom::Atom;
-use crate::Relation;
+use crate::relation::Relation;
 
-pub struct Model {
+struct Model {
     _window: window::Id,
     settings: Settings,
     atoms: Vec<Atom>,
@@ -23,6 +23,7 @@ pub struct Settings {
     pub zoom: f32,
     pub psize: f32,
 }
+
 fn init(app: &App, _window: window::Id) -> Model {
     let win = app.window(_window).unwrap();
     let egui = Egui::from_window(&win);
@@ -64,6 +65,7 @@ fn init(app: &App, _window: window::Id) -> Model {
         egui,
     }
 }
+
 fn restart(app: &App, _window: window::Id, n: usize, n_t: usize) -> Model {
     let m = init(app, _window);
     let num: usize = n;
@@ -98,6 +100,7 @@ fn restart(app: &App, _window: window::Id, n: usize, n_t: usize) -> Model {
         egui: e,
     }
 }
+
 pub fn model(app: &App) -> Model {
     let _window = app
         .new_window()
@@ -204,6 +207,7 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
         model.atoms[i].update();
     }
 }
+
 fn events(_app: &App, _model: &mut Model, event: WindowEvent) {
     match event {
         // TODO
@@ -212,6 +216,7 @@ fn events(_app: &App, _model: &mut Model, event: WindowEvent) {
         _ => {}
     }
 }
+
 fn raw_events(_app: &App, model: &mut Model, event: &nannou::winit::event::WindowEvent) {
     model.egui.handle_raw_event(event);
 }
